@@ -152,6 +152,22 @@ The result is even worth as it looks like all the parameters were taken randomly
 *Observation*
 Same conclusion as S3...
 
+| Parameter | Mean    | 95 % CI low | 95 % CI high | Statistic |
+|-----------|:-------:|:-----------:|:------------:|----:      |
+| α (1.7)   | 1.672   | 1.184       | 1.991        | S5        |
+| β (0.9)   | 0.045   | −0.951      | 0.949        | S5        |
+| γ (10)    | 9.302   | 0.958       | 22.110      | S5        |
+| δ (10)    | 10.485  | -7.009    |  28.198  | S5        |
+
+*Observation* 
+Here only β seems random.
+
+
+###### Conlusion on ABC Reject
+
+The running time of the algorithm was about 5 minutes for each summary statistic, thanks to the vectorized version. (In the non-vectorized version, the algorithm did not finish even after 2 hours.)
+
+The results are quite good, especially considering that the chosen epsilon was relatively large to save computational time. However, for some statistics (notably S3 and S4), the parameters appear to have been selected almost randomly.
 
 ---
 ##### MCMC-ABC
