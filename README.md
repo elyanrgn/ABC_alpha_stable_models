@@ -228,13 +228,18 @@ A very good alpha and beta, but a bad gamma and delta
 | δ (10)    | 8.961   | 6.079       |  12.273      | S5        |
 
 very good delta and gamma but a bad alpha and beta
+
+###### Conclusion on SMC-PRC-ABC
+
+The running time of the algorithm was about 1 hour for each summary statistic. This is because we did not have time to vectorize the algorithm; otherwise, the running time would have been similar to, or even faster than, the other ABC algorithms. (In fact, it takes "only" 1 hour without vectorization, whereas the non-vectorized versions of the other algorithms did not even finish.)
+
+The results are slightly better than with the other ABC algorithms, especially for the statistics S3 and S4.
 ---
 
 ### Final Observations
 
 - For S2, delta and gamma are fairly well estimated, but alpha and beta still deviate significantly.
 - For S4 and S5, alpha and beta estimates improve, while gamma and delta may deteriorate.
-- Using RQMC significantly reduces estimator variance compared to standard Monte Carlo.
 
 ---
 
