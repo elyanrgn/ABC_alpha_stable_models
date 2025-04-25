@@ -166,6 +166,22 @@ def s4(x):
     return np.hstack((phi.real, phi.imag))
 
 
+def S1(x,gamma=10):
+    """
+    Calcule l’estimateur de McCulloch (ou un vecteur de 4 nombres)
+    qui correspondent aux estimations de (alpha, beta, gamma, delta) à partir de x.
+    """
+    # Chercher l'estimateur de McCulloch pour alpha, beta, gamma, delta
+    # (voir le papier de McCulloch, 1986)
+    q = np.quantile(x, [0.05, 0.25, 0.5, 0.75, 0.95])
+    alpha_hat = (q[4]-q[0])/(q[3]-q[1])
+    beta_hat = (q[4]+q[0]-2*q[2])/(q[4]-q[0])
+    gamma_hat = (q[3]-q[1])/gamma
+    delta_hat = np.mean(x)
+    return np.array([alpha_hat, beta_hat, gamma_hat, delta_hat])
+
+
+
 def stat(statistic, x):
     """ 
     for mcmc abc we use S3,S4 statistic
@@ -178,5 +194,7 @@ def stat(statistic, x):
 
     elif statistic=="s2":
         return summary_stat_2(x)
+    elif statistic=="s1":
+        return S1(x)
     else:
         raise ValueError(f"Unknown summary statistic '{statistic}'")
