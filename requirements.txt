@@ -12,3 +12,4 @@ seaborn>=0.13
 
 # --- utilitaire ---
 tqdm>=4.66
+typing
