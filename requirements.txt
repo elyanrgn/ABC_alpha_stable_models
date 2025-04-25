@@ -1,0 +1,14 @@
+# --- calcul numérique / machine-learning ---
+jax>=0.4.24          # moteur JAX
+jaxlib>=0.4.24       # backend CPU (ajoutez +cuda12/rocm si vous ciblez un GPU)
+
+numpy>=1.26          # utilisé par JAX & SciPy
+scipy>=1.11          # qmc, special.logsumexp, etc.
+
+# --- data science / visualisation ---
+pandas>=2.2
+matplotlib>=3.8
+seaborn>=0.13
+
+# --- utilitaire ---
+tqdm>=4.66
