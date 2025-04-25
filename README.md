@@ -264,6 +264,11 @@ All the parameters are bad
 
 good alpha and beta but poor gamma delta
 
+###### Conlusion on ABC Reject
+
+The algorithm is time efficient for a reasonable number of iterations. It does estimate well the alpha and beta parameters. S4 is the statistic that minimised epsilon making it close to zero. However, problems arise with estimation of delta, gamma parameters, as their assignment is mostly random.
+
+
 
 ---
 ##### SMC-PRC-ABC
