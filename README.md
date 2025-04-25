@@ -154,7 +154,100 @@ Same conclusion as S3...
 
 
 ---
+
 ##### MCMC-ABC
+
+
+The method consists of:
+
+1. Proposing a new θ' based on the current θ using a proposal distribution with a random walk inside uniform distribution.
+2. Simulating data of alpha stable data given θ'.
+3. Accepting θ' with a probability that depends on how close the simulated data is to the observed data (within epsilon) and the prior and proposal distributions.
+
+
+Because of the fact that delta and gammma parameters are widely spread, the random walk on the wide interval is less efficient compared to other methods.
+
+
+`mcmc_abc_new.ipynb` and `helpers.ipynb` present the implementation and summary statistics.
+
+### ABC-MCMC Algorithm
+
+**Inputs:**
+- Observed data: `y_obs`
+- Prior distribution: `π(θ)`
+- Proposal distribution: `q(θ' | θ)`
+- Distance function: `d(y, y_obs)`
+- Tolerance: `ε`
+- Number of iterations: `N`
+
+**Output:**
+- Sequence of accepted θ values
+
+**Algorithm:**
+
+1. Sample initial `θ₀` from the prior `π(θ)`.
+2. Simulate `y₀` from the model given `θ₀`.
+3. If `d(y₀, y_obs) > ε`, repeat steps 1–2 until `d(y₀, y_obs) ≤ ε`.
+4. Set `θ_current = θ₀`.
+5. For `i = 1` to `N`:
+    - Propose `θ'` ~ `q(θ' | θ_current)`.
+    - Simulate `y'` from the model given `θ'`.
+    - If `d(y', y_obs) ≤ ε`:
+        - Compute acceptance probability:
+          ```
+          a = min(1, [π(θ') * q(θ_current | θ')] / [π(θ_current) * q(θ' | θ_current)])
+          ```
+        - Accept `θ'` with probability `a`:
+            - If accepted, set `θ_current = θ'`.
+    - Store `θ_current`.
+6. Return all stored `θ` values.
+
+
+
+ Epsilon Values change from one method to another proposing that S4 is one of the most efficient in terms of precision 
+
+- For S3: epsilon = 2
+- For S4: epsilon = 0.2
+- For S2, S1: epsilon = 100
+
+---
+
+
+###### Results for MCMC-ABC:
+
+
+| Parameter | Mean    | 95 % CI low | 95 % CI high | Statistic |
+|-----------|:-------:|:-----------:|:------------:|----:      |
+| α (1.7)   | 1.474   | 1.118       | 1.982        | S2        |
+| β (0.9)   | -0.399  | -0.981      | 0.381        | S2        |
+| γ (10)    | 106.676 | 2.415       | 291.678      | S2        |
+| δ (10)    | 3.670   | -115.552    | 109.175      | S2        |
+
+
+
+
+| Parameter | Mean    | 95 % CI low | 95 % CI high | Statistic |
+|-----------|:-------:|:-----------:|:------------:|----:      |
+| α (1.7)   | 1.268   | 1.110       | 1.380        | S3        |
+| β (0.9)   | -0.603  | -0.927      | -0.165       | S3        |
+| γ (10)    | 105.503 | 21.503      | 174.260      | S3        |
+| δ (10)    | 195.065 | 56.111      | 295.793      | S3        |
+
+
+All the parameters are bad
+
+
+| Parameter | Mean    | 95 % CI low | 95 % CI high | Statistic |
+|-----------|:-------:|:-----------:|:------------:|----:      |
+| α (1.7)   | 1.591   | 1.332       | 1.817        | S4        |
+| β (0.9)   | 0.637   | 0.261       | 0.985        | S4        |
+| γ (10)    | 156.562 | 1.328       | 291.665      | S4        |
+| δ (10)    | -55.991 | -281.104    | 278.516      | S4        |
+
+
+
+good alpha and beta but poor gamma delta
+
 
 ---
 ##### SMC-PRC-ABC
