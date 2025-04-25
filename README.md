@@ -66,10 +66,10 @@ We aim to estimate E[cos(Y)] where Y is sampled from an alpha-stable distributio
 
 Results:
 
-| Sampler        | Mean (E[cos(Y)]) | Std Dev | Execution Time (s) |
+| Sampler        | Mean (E[cos(Y)]) | Std Dev | Execution Time (ms) |
 |----------------|:----------------:|:-------:|:------------------:|
-| RQMC (Sobol)   | 0.356             | 0.0011  | 1.847              |
-| MC             | 0.356             | 0.0094  | 1.874              |
+| RQMC (Sobol)   | 0.356             | 0.0011  | 50.5  ± 2.71         |
+| MC             | 0.356             | 0.0094  | 47.1  ± 0.780          |
 
 ✅ As expected, **RQMC** significantly reduces the standard deviation compared to regular Monte Carlo.
 
