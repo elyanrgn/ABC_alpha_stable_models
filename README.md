@@ -230,10 +230,10 @@ Because of the fact that delta and gammma parameters are widely spread, the rand
 
 
 
- Epsilon Values change from one method to another proposing that S4 is one of the most efficient in terms of precision 
+ Epsilon Values change from one method to another proposing that S4 is one of the most efficient in terms of precision (epsilon from 0.05 to 0.2)
 
 - For S3: epsilon = 2
-- For S4: epsilon = 0.2
+- For S4: epsilon = from 0.05 to 0.2
 - For S2, S1: epsilon = 100
 
 ---
