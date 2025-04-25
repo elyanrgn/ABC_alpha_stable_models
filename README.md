@@ -1,2 +1,230 @@
-# ABC_alpha_stable_models
-This project is based on the following paper: https://doi.org/10.1016/j.csda.2010.10.004 which proposes an ABC approach to estimate the parameters of the following type of model: X1, . . . , Xn are IID and follow an alpha-stable distribution
+# Simulation and Monte Carlo
+## ABC for Alpha-Stable Models
+
+---
+
+### Question n°1: Validity of the CMS Method
+
+To implement the method presented in Appendix B, the library **JAX** was used to improve performance.
+
+Let's understand why the **Chambers–Mallows–Stuck (CMS) method** is valid:
+
+Stable distributions are defined through their **characteristic functions**, because their density functions typically don't have a closed form (except for special cases like Gaussian, Cauchy, and Lévy).
+
+The characteristic function for a standardized alpha-stable distribution is:
+
+φ(t) = exp( -|t|^α * [1 + iβ * sgn(t) * tan(πα / 2)] ), for α ≠ 1
+
+
+The CMS method samples from this distribution by transforming two random variables:
+
+- U ~ Uniform(-π/2, π/2)
+- W ~ Exponential(1)
+
+Then compute:
+
+X = [sin(αU) / cos(U)^(1/α)] * [cos((1−α)U) / W]^((1−α)/α)
+
+
+This transformation generates a random variable with the same characteristic function as the target alpha-stable distribution (see proof in:  
+**Rafał Weron, _On the Chambers–Mallows–Stuck method for simulating skewed stable random variables_, Statistics & Probability Letters, 1996**).
+
+Behind this transformation is an **analytical inversion** of the characteristic function — constructing a transformation from known variables to the alpha-stable distribution.
+
+This approach is guaranteed to be valid because:
+
+1. The characteristic function fully defines the distribution.
+2. The transformation matches the characteristic function exactly.
+
+---
+
+### Question n°2: RQMC vs MC for Sampling Alpha-Stable Laws
+
+#### How to use RQMC
+
+To generate `n` samples from an alpha-stable distribution, we need to sample:
+
+- U ~ Uniform(-π/2, π/2)
+- W ~ Exponential(1)
+
+Instead of regular random sampling, we can use **RQMC** (Randomized Quasi-Monte Carlo) by generating a **scrambled Sobol sequence** in [0,1]^2.
+
+Steps:
+
+1. Generate (u, v) in [0,1]^2 using a Sobol sequence.
+2. Transform:
+   - u' = u * π - π/2
+   - w = -log(v) (inverse CDF of Exponential(1))
+3. Use the CMS method to generate alpha-stable samples from u' and w.
+
+---
+
+#### RQMC vs MC: Results
+
+We aim to estimate E[cos(Y)] where Y is sampled from an alpha-stable distribution with parameters:  
+(α, β, γ, δ) = (1.7, 0.5, 1, 0)
+
+Results:
+
+| Sampler        | Mean (E[cos(Y)]) | Std Dev | Execution Time (s) |
+|----------------|:----------------:|:-------:|:------------------:|
+| RQMC (Sobol)   | 0.356             | 0.0011  | 1.847              |
+| MC             | 0.356             | 0.0094  | 1.874              |
+
+✅ As expected, **RQMC** significantly reduces the standard deviation compared to regular Monte Carlo.
+
+---
+
+### Question n°3: ABC Inference for Alpha-Stable Parameters
+
+#### Summary Features
+
+We implemented the summary statistics S2, S3, S4, S5 as described in the paper.
+
+- Each function exists in both a **vectorized** and **non-vectorized** version.
+- Initially, only non-vectorized functions were implemented, but the ABC algorithms were too slow, so we vectorized everything.
+
+---
+
+#### ABC Algorithms
+
+##### Data Generation
+
+The **observed data** were generated using the parameters:
+
+(α, β, γ, δ) = (1.7, 0.9, 10, 10)
+
+##### Prior Distributions
+
+- α ~ Uniform(1.1, 2)
+- β ~ Uniform(-1, 1)
+- γ ~ Uniform(0, 300)
+- δ ~ Uniform(-300, 300)
+
+##### Epsilon Values
+
+- For S2, S3, S4: epsilon = 0.78125
+- For S5: epsilon = 100
+
+*Note:* For S5, epsilon = 10 caused ABC-Reject to not finish even after 10 hours.
+
+---
+
+##### ABC-Reject Method
+
+The method consists of:
+
+1. Sampling θ from the prior.
+2. Simulating data given θ.
+3. Accepting θ if the simulated data is close enough to the observed data (within epsilon).
+
+---
+
+###### Results for ABC-Reject:
+
+| Parameter | Mean  | 95% CI Low | 95% CI High | Statistic |
+|-----------|:-----:|:----------:|:-----------:|:---------:|
+| α (1.7)   | 1.622 | 1.175      | 1.984       | S2        |
+| β (0.9)   | -0.014| -0.935     | 0.953       | S2        |
+| γ (10)    | 14.368| 6.357      | 26.832      | S2        |
+| δ (10)    | 9.772 | 3.283      | 16.417      | S2        |
+
+*Observation:*  
+δ and γ are reasonably well estimated, but α and β estimates are widely spread across the prior.
+
+| Parameter | Mean    | 95 % CI low | 95 % CI high | Statistic |
+|-----------|:-------:|:-----------:|:------------:|----:      |
+| α (1.7)   | 1.547   | 1.119       | 1.977        | S3        |
+| β (0.9)   | -0.002  | −0.957      | 0.947        | S3        |
+| γ (10)    | 184.981 | 13.228       | 295.651       | S3        |
+| δ (10)    | 2.592    | -284.734       |  283.215      | S3        |
+
+*Observation*
+The result is even worth as it looks like all the parameters were taken randomly on the prior : epsilon must be to high
+
+| Parameter | Mean    | 95 % CI low | 95 % CI high | Statistic |
+|-----------|:-------:|:-----------:|:------------:|----:      |
+| α (1.7)   | 1.674   | 1.155       | 1.986        | S4        |
+| β (0.9)   | 0.082  | −0.976      | 0.956       | S4        |
+| γ (10)    | 147.877 | 8.147       | 291.977       | S4        |
+| δ (10)    | -5.377    | -280.375       |  282.740      | S4        |
+
+*Observation*
+Same conclusion as S3...
+
+
+---
+##### MCMC-ABC
+
+---
+##### SMC-PRC-ABC
+
+**SMC-PRC-ABC** combines two key ideas:
+
+1. **Sequential tightening of epsilon:**  
+   Start with a large epsilon (loose acceptance), then gradually reduce it by mutating accepted samples.
+2. **Importance sampling:**  
+   Particles are reweighted based on their likelihood.
+
+Following Appendix A, the function was **not vectorized**, resulting in long computation times (about 1 hour per statistic).
+
+---
+
+###### Results for SMC-PRC-ABC:
+
+
+| Parameter | Mean    | 95 % CI low | 95 % CI high | Statistic |
+|-----------|:-------:|:-----------:|:------------:|----:      |
+| α (1.7)   | 1.539   | 1.245       | 1.847        | S2        |
+| β (0.9)   | -0.588  | −0.976      | 0.234        | S2        |
+| γ (10)    | 28.118  | 17.183      | 39.411       | S2        |
+| δ (10)    | 11.473  | 3.060       |  20.681      | S2        |
+
+Quite a good delta and Gamma but alpha et beta are not very good
+
+| Parameter | Mean    | 95 % CI low | 95 % CI high | Statistic |
+|-----------|:-------:|:-----------:|:------------:|----:      |
+| α (1.7)   | 1.556   | 1.125       | 1.972        | S3        |
+| β (0.9)   | -0.020  | −0.939      | 0.937        | S3        |
+| γ (10)    | 199.174 | 64.653      | 292.269      | S3        |
+| δ (10)    | -21.951 | -282.838    |  288.510     | S3        |
+
+All the parameters are bad
+
+
+| Parameter | Mean    | 95 % CI low | 95 % CI high | Statistic |
+|-----------|:-------:|:-----------:|:------------:|----:      |
+| α (1.7)   | 1.682   | 1.604       | 1.769        | S4        |
+| β (0.9)   | 0.728   | 0.414       | 0.985        | S4        |
+| γ (10)    | 149.742 | 13.383      | 292.269      | S4        |                       
+| δ (10)    | 2.859   | -280.892    | 288.510      | S4        |
+
+
+A very good alpha and beta, but a bad gamma and delta
+
+
+
+| Parameter | Mean    | 95 % CI low | 95 % CI high | Statistic |
+|-----------|:-------:|:-----------:|:------------:|----:      |
+| α (1.7)   | 1.590   | 1.139       | 1.977        | S5        |
+| β (0.9)   | 0.288   | −0.719      | 0.951        | S5        |
+| γ (10)    | 9.890   | 7.472       | 12.230       | S5        |
+| δ (10)    | 8.961   | 6.079       |  12.273      | S5        |
+
+very good delta and gamma but a bad alpha and beta
+---
+
+### Final Observations
+
+- For S2, delta and gamma are fairly well estimated, but alpha and beta still deviate significantly.
+- For S4 and S5, alpha and beta estimates improve, while gamma and delta may deteriorate.
+- Using RQMC significantly reduces estimator variance compared to standard Monte Carlo.
+
+---
+
+# Conclusion
+
+- CMS is a valid method for simulating alpha-stable distributions.
+- RQMC improves sampling efficiency and variance reduction.
+- Summary statistics and careful epsilon tuning are key to accurate ABC inference.
+
