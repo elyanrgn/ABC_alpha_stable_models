@@ -66,10 +66,10 @@ We aim to estimate E[cos(Y)] where Y is sampled from an alpha-stable distributio
 
 Results:
 
-| Sampler        | Mean (E[cos(Y)]) | Std Dev | Execution Time (s) |
+| Sampler        | Mean (E[cos(Y)]) | Std Dev | Execution Time (ms) |
 |----------------|:----------------:|:-------:|:------------------:|
-| RQMC (Sobol)   | 0.356             | 0.0011  | 1.847              |
-| MC             | 0.356             | 0.0094  | 1.874              |
+| RQMC (Sobol)   | 0.356             | 0.0011  | 50.5  ± 2.71         |
+| MC             | 0.356             | 0.0094  | 47.1  ± 0.780          |
 
 ✅ As expected, **RQMC** significantly reduces the standard deviation compared to regular Monte Carlo.
 
@@ -152,6 +152,22 @@ The result is even worth as it looks like all the parameters were taken randomly
 *Observation*
 Same conclusion as S3...
 
+| Parameter | Mean    | 95 % CI low | 95 % CI high | Statistic |
+|-----------|:-------:|:-----------:|:------------:|----:      |
+| α (1.7)   | 1.672   | 1.184       | 1.991        | S5        |
+| β (0.9)   | 0.045   | −0.951      | 0.949        | S5        |
+| γ (10)    | 9.302   | 0.958       | 22.110      | S5        |
+| δ (10)    | 10.485  | -7.009    |  28.198  | S5        |
+
+*Observation* 
+Here only β seems random.
+
+
+###### Conlusion on ABC Reject
+
+The running time of the algorithm was about 5 minutes for each summary statistic, thanks to the vectorized version. (In the non-vectorized version, the algorithm did not finish even after 2 hours.)
+
+The results are quite good, especially considering that the chosen epsilon was relatively large to save computational time. However, for some statistics (notably S3 and S4), the parameters appear to have been selected almost randomly.
 
 ---
 
@@ -305,13 +321,18 @@ A very good alpha and beta, but a bad gamma and delta
 | δ (10)    | 8.961   | 6.079       |  12.273      | S5        |
 
 very good delta and gamma but a bad alpha and beta
+
+###### Conclusion on SMC-PRC-ABC
+
+The running time of the algorithm was about 1 hour for each summary statistic. This is because we did not have time to vectorize the algorithm; otherwise, the running time would have been similar to, or even faster than, the other ABC algorithms. (In fact, it takes "only" 1 hour without vectorization, whereas the non-vectorized versions of the other algorithms did not even finish.)
+
+The results are slightly better than with the other ABC algorithms, especially for the statistics S3 and S4.
 ---
 
 ### Final Observations
 
 - For S2, delta and gamma are fairly well estimated, but alpha and beta still deviate significantly.
 - For S4 and S5, alpha and beta estimates improve, while gamma and delta may deteriorate.
-- Using RQMC significantly reduces estimator variance compared to standard Monte Carlo.
 
 ---
 
