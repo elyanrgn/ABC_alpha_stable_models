@@ -296,6 +296,15 @@ Following Appendix A, the function was **not vectorized**, resulting in long com
 
 ###### Results for SMC-PRC-ABC:
 
+| Parameter | Mean    | 95 % CI low | 95 % CI high | Statistic |
+|-----------|:-------:|:-----------:|:------------:|----:      |
+| α (1.7)   | 1.708   | 1.681       | 1.763        | S1        |
+| β (0.9)   | 0.900  | 0.751      | 0.985        | S1        |
+| γ (10)    | 9.965  | 9.828      | 10.250       | S1        |
+| δ (10)    | 9.978  | 7.547       |  13.068      | S1        |
+
+We get a extremly good result with the statistic S1 even though our epsilon is quite big (=0.78125)
+
 
 | Parameter | Mean    | 95 % CI low | 95 % CI high | Statistic |
 |-----------|:-------:|:-----------:|:------------:|----:      |
@@ -341,7 +350,7 @@ very good delta and gamma but a bad alpha and beta
 
 The running time of the algorithm was about 1 hour for each summary statistic. This is because we did not have time to vectorize the algorithm; otherwise, the running time would have been similar to, or even faster than, the other ABC algorithms. (In fact, it takes "only" 1 hour without vectorization, whereas the non-vectorized versions of the other algorithms did not even finish.)
 
-The results are slightly better than with the other ABC algorithms, especially for the statistics S3 and S4.
+The results are slightly better than with the other ABC algorithms, especially for the statistics S3 and S4, and the result with S1 is impressive as it is extremly good.
 ---
 
 ### Final Observations
