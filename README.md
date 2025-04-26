@@ -71,7 +71,7 @@ Results:
 | RQMC (Sobol)   | 0.356             | 0.0011  | 50.5  ± 2.71         |
 | MC             | 0.356             | 0.0094  | 47.1  ± 0.780          |
 
-✅ As expected, **RQMC** significantly reduces the standard deviation compared to regular Monte Carlo.
+As expected, **RQMC** significantly reduces the standard deviation compared to regular Monte Carlo.
 
 ---
 
@@ -273,7 +273,7 @@ All the parameters are bad
 
 good alpha and beta but poor gamma delta
 
-###### Conlusion on ABC Reject
+###### Conlusion on ABC-MCMC
 
 The algorithm is time efficient for a reasonable number of iterations. It does estimate well the alpha and beta parameters. S4 is the statistic that minimised epsilon making it close to zero. However, problems arise with estimation of delta, gamma parameters, as their assignment is mostly random.
 
@@ -350,6 +350,8 @@ very good delta and gamma but a bad alpha and beta
 The running time of the algorithm was about 1 hour for each summary statistic. This is because we did not have time to vectorize the algorithm; otherwise, the running time would have been similar to, or even faster than, the other ABC algorithms. (In fact, it takes "only" 1 hour without vectorization, whereas the non-vectorized versions of the other algorithms did not even finish.)
 
 The results are better than with the other ABC algorithms, especially for the statistics S3 and S4, and the result with S1 is impressive as it is extremly good.
+
+
 ---
 
 #  Conclusion
