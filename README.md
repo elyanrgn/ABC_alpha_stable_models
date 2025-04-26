@@ -352,21 +352,62 @@ The running time of the algorithm was about 1 hour for each summary statistic. T
 The results are better than with the other ABC algorithms, especially for the statistics S3 and S4, and the result with S1 is impressive as it is extremly good.
 ---
 
-### Final Observations
+#  Conclusion
 
-- S1 is by far the best summary statistic among the five.
-- For S2, delta and gamma are fairly well estimated, but alpha and beta still deviate significantly.
-- For S4 and S5, alpha and beta estimates improve, while gamma and delta may deteriorate.
+This project explored the use of Approximate Bayesian Computation (ABC) methods for inferring the parameters of **alpha-stable distributions**, leveraging **CMS simulation** and **RQMC** sampling to ensure efficiency.
 
-- SMC-PRC-ABC gives the best results and is a lot faster (compared to the non vectorised algorithm) for a given epsilon
-- ABC Rejection gives some good results but is not applicable if not vectorised
-
+Through detailed experiments, we compared three ABC algorithms:
 
 ---
 
-# Conclusion
+##  ABC-Rejection
 
-- CMS is a valid method for simulating alpha-stable distributions.
-- RQMC improves sampling efficiency and variance reduction.
-- Summary statistics and careful epsilon tuning are key to accurate ABC inference.
+- **Advantages:**  
+  - Very simple to implement.
+  - When vectorized, it becomes reasonably fast (~5 minutes per statistic).
+- **Limitations:**  
+  - Highly sensitive to the choice of epsilon.
+  - For larger epsilon values, parameter estimates may be inaccurate, especially for **β**, **γ**, and **δ**.
+  - Without vectorization, the method is impractical (several hours or infinite runtime).
 
+---
+
+##  ABC-MCMC
+
+- **Advantages:**  
+  - More efficient than pure rejection because it proposes new samples based on the current state.
+  - Allows exploration of the posterior even when acceptance rates are low.
+- **Limitations:**  
+  - Performance heavily depends on the proposal distribution.
+  - Estimation of **γ** and **δ** remains unstable due to the wide prior ranges.
+  - **S4** performed best in terms of minimizing epsilon and producing tighter estimates.
+
+---
+
+##  SMC-PRC-ABC
+
+- **Advantages:**  
+  - Best performance across all methods.
+  - Sequential reduction of epsilon improves parameter estimation progressively.
+  - Even without vectorization, results were excellent — especially with **S1**, where almost perfect recovery of parameters was achieved.
+- **Limitations:**  
+  - Computationally heavier (~1 hour per statistic) due to lack of vectorization (yet still feasible compared to unvectorized rejection or MCMC).
+  - Would benefit even more from future vectorization.
+
+---
+
+##  Global Insights
+
+- **Summary statistic S1** (McCulloch's) is clearly the most powerful and robust across all methods.
+- **S4** and **S5** can be useful but require finer epsilon tuning to avoid random sampling effects.
+- **SMC-PRC-ABC** outperforms both ABC-Rejection and ABC-MCMC in terms of precision and robustness, despite longer runtime.
+- **Vectorization** is absolutely critical: without it, ABC algorithms become unusable in practice.
+
+---
+
+#  Final Takeaways
+
+- **CMS + RQMC** provides a fast, accurate method to simulate alpha-stable variables.
+- **Vectorized summary statistics** dramatically improve ABC performance.
+- **Careful selection of summary statistics and epsilon** is essential for successful inference.
+- **SMC-PRC-ABC + S1** is currently the most reliable approach based on our experiments.
