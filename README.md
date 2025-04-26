@@ -194,7 +194,6 @@ The method consists of:
 Because of the fact that delta and gammma parameters are widely spread, the random walk on the wide interval is less efficient compared to other methods.
 
 
-`mcmc_abc_new.ipynb` and `helpers.ipynb` present the implementation and summary statistics.
 
 ### ABC-MCMC Algorithm
 
@@ -350,13 +349,18 @@ very good delta and gamma but a bad alpha and beta
 
 The running time of the algorithm was about 1 hour for each summary statistic. This is because we did not have time to vectorize the algorithm; otherwise, the running time would have been similar to, or even faster than, the other ABC algorithms. (In fact, it takes "only" 1 hour without vectorization, whereas the non-vectorized versions of the other algorithms did not even finish.)
 
-The results are slightly better than with the other ABC algorithms, especially for the statistics S3 and S4, and the result with S1 is impressive as it is extremly good.
+The results are better than with the other ABC algorithms, especially for the statistics S3 and S4, and the result with S1 is impressive as it is extremly good.
 ---
 
 ### Final Observations
 
+- S1 is by far the best summary statistic among the five.
 - For S2, delta and gamma are fairly well estimated, but alpha and beta still deviate significantly.
 - For S4 and S5, alpha and beta estimates improve, while gamma and delta may deteriorate.
+
+- SMC-PRC-ABC gives the best results and is a lot faster (compared to the non vectorised algorithm) for a given epsilon
+- ABC Rejection gives some good results but is not applicable if not vectorised
+
 
 ---
 
